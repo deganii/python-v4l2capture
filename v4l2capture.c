@@ -322,6 +322,49 @@ static PyObject *Video_device_get_format(Video_device *self)
   return Py_BuildValue("iis", format.fmt.pix.width, format.fmt.pix.height, current_fourcc);
 }
 
+static int format_ioctl(int fd, int request, void *arg)
+{
+  // Retry ioctl until it returns without being interrupted.
+  for(;;)
+    {
+      return v4l2_ioctl(fd, request, arg);
+    }
+}
+
+static PyObject *Video_device_get_formats(Video_device *self)
+{
+  struct v4l2_fmtdesc fmtdesc;
+  struct v4l2_frmsizeenum frmsize;
+
+  fmtdesc.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  fmtdesc.index = 0;
+  PyObject* pDict = PyDict_New();
+  assert(PyDict_Check(pDict));
+  char current_fourcc[5];
+
+  while (format_ioctl(self->fd, VIDIOC_ENUM_FMT, &fmtdesc) == 0) {
+      frmsize.pixel_format = fmtdesc.pixelformat;
+      frmsize.index = 0;
+      PyObject* pList = PyList_New(0);
+      assert(PyList_Check(pList));
+
+      while (format_ioctl(self->fd, VIDIOC_ENUM_FRAMESIZES, &frmsize) == 0){
+          if(frmsize.type == V4L2_FRMSIZE_TYPE_DISCRETE){
+              PyList_Append(pList, Py_BuildValue("(i,i)", frmsize.discrete.width, frmsize.discrete.height));
+          }else if(frmsize.type == V4L2_FRMSIZE_TYPE_STEPWISE){
+              PyList_Append(pList, Py_BuildValue("(i,i)", frmsize.stepwise.step_width, frmsize.stepwise.step_height));
+          }
+          frmsize.index++;
+      }
+      get_fourcc_str(current_fourcc, frmsize.pixel_format);
+      PyDict_SetItemString(pDict, current_fourcc, pList);
+      fmtdesc.index++;
+  } 
+  
+  return pDict;
+}
+
+
 static PyObject *Video_device_get_fourcc(Video_device *self, PyObject *args)
 {
   char *fourcc_str;
@@ -767,6 +810,9 @@ static PyMethodDef Video_device_methods[] = {
   {"get_format", (PyCFunction)Video_device_get_format, METH_NOARGS,
        "get_format() -> size_x, size_y, fourcc\n\n"
        "Request the current video format."},
+  {"get_formats", (PyCFunction)Video_device_get_formats, METH_NOARGS,
+       "get_format() -> {fourcc: (size_x, size_y)}\n\n"
+       "Request the supported video format."},
   {"set_format", (PyCFunction)Video_device_set_format, METH_VARARGS|METH_KEYWORDS,
        "set_format(size_x, size_y, yuv420 = 0, fourcc='MJPEG') -> size_x, size_y\n\n"
        "Request the video device to set image size and format. The device may "
