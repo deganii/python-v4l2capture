@@ -461,6 +461,43 @@ static PyObject *Video_device_get_white_balance_temperature(Video_device *self)
 #endif
 }
 
+static PyObject *Video_device_set_contrast(Video_device *self, PyObject *args)
+{
+#ifdef V4L2_CID_CONTRAST
+  int contrast;
+  if(!PyArg_ParseTuple(args, "i", &contrast))
+    {
+      return NULL;
+    }
+
+  struct v4l2_control ctrl;
+  CLEAR(ctrl);
+  ctrl.id    = V4L2_CID_CONTRAST;
+  ctrl.value = contrast;
+  if(my_ioctl(self->fd, VIDIOC_S_CTRL, &ctrl)){
+  	return NULL;
+  }
+  return Py_BuildValue("i",ctrl.value);
+#else
+  return NULL;
+#endif
+}
+
+static PyObject *Video_device_get_contrast(Video_device *self)
+{
+#ifdef V4L2_CID_CONTRAST
+  struct v4l2_control ctrl;
+  CLEAR(ctrl);
+  ctrl.id    = V4L2_CID_CONTRAST;
+  if(my_ioctl(self->fd, VIDIOC_G_CTRL, &ctrl)){
+  	return NULL;
+  }
+  return Py_BuildValue("i",ctrl.value);
+#else
+  return NULL;
+#endif
+}
+
 static PyObject *Video_device_set_exposure_absolute(Video_device *self, PyObject *args)
 {
 #ifdef V4L2_CID_EXPOSURE_ABSOLUTE
@@ -837,6 +874,13 @@ static PyMethodDef Video_device_methods[] = {
   {"get_white_balance_temperature", (PyCFunction)Video_device_get_white_balance_temperature, METH_NOARGS,
        "get_white_balance_temperature() -> temp \n\n"
        "Request the video device to get white balance temperature value. " },
+  {"set_contrast", (PyCFunction)Video_device_set_contrast, METH_VARARGS,
+       "set_contrast(contrast) -> contrast \n\n"
+       "Request the video device to set contrast to value. The device may "
+       "choose another value than requested and will return its choice. " },
+  {"get_contrast", (PyCFunction)Video_device_get_contrast, METH_NOARGS,
+       "get_contrast() -> contrast \n\n"
+       "Request the video device to get contrast value. " },
   {"set_exposure_auto", (PyCFunction)Video_device_set_exposure_auto, METH_VARARGS,
        "set_exposure_auto(autoexp) -> autoexp \n\n"
        "Request the video device to set auto exposure to value. The device may "
