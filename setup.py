@@ -13,10 +13,10 @@
 from distutils.core import Extension, setup
 setup(
     name = "v4l2capture",
-    version = "1.5",
-    author = "Fredrik Portstrom",
-    author_email = "fredrik@jemla.se",
-    url = "http://fredrik.jemla.eu/v4l2capture",
+    version = "1.6",
+    author = "Fredrik Portstrom (I.Degani fork)",
+    author_email = "fredrik@jemla.se / idegani@mit.edu",
+    url = "https://github.com/deganii/python-v4l2capture",
     description = "Capture video with video4linux2",
     long_description = "python-v4l2capture is a slim and easy to use Python "
     "extension for capturing video with video4linux2.",
