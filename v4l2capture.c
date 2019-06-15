@@ -945,7 +945,7 @@ static PyMethodDef Video_device_methods[] = {
           "set_generic(id, value) -> value \n\n"
           "Request the video device to set a generic (int) property. Useful in cases "
           "where the explicit control setter method has not been implemented. " },
-  {"get_generic_int", (PyCFunction)Video_device_get_generic_int, METH_NOARGS,
+  {"get_generic_int", (PyCFunction)Video_device_get_generic_int, METH_VARARGS,
           "get_generic(id) -> value \n\n"
           "Request the video device to get a generic (int) property. Useful in cases "
           "where the explicit control getter method has not been implemented. " },
