@@ -609,6 +609,41 @@ static PyObject *Video_device_get_focus_auto(Video_device *self)
 #endif
 }
 
+static PyObject *Video_device_set_generic(Video_device *self, PyObject *args)
+{
+    struct v4l2_control ctrl;
+    CLEAR(ctrl);
+  if(!PyArg_ParseTuple(args, "Ii", &(ctrl.id), &(ctrl.value))
+    {
+      return NULL;
+    }
+
+  //ctrl.id    = g_id;
+  //ctrl.value = g_value;
+  if(my_ioctl(self->fd, VIDIOC_S_CTRL, &ctrl)){
+  	return NULL;
+  }
+  return Py_BuildValue("i",ctrl.value);
+}
+
+static PyObject *Video_device_get_generic(Video_device *self, PyObject *args)
+{
+  struct v4l2_control ctrl;
+    CLEAR(ctrl);
+
+    if(!PyArg_ParseTuple(args, "I", &(ctrl.id)))
+    {
+        return NULL;
+    }
+
+  if(my_ioctl(self->fd, VIDIOC_G_CTRL, &ctrl)){
+  	return NULL;
+  }
+  return Py_BuildValue("i",ctrl.value);
+}
+
+
+
 static PyObject *Video_device_start(Video_device *self)
 {
   ASSERT_OPEN;
@@ -906,6 +941,14 @@ static PyMethodDef Video_device_methods[] = {
   {"get_focus_auto", (PyCFunction)Video_device_get_focus_auto, METH_NOARGS,
        "get_focus_auto() -> autofocus \n\n"
        "Request the video device to get auto focus value. " },
+  {"set_generic", (PyCFunction)Video_device_set_generic, METH_VARARGS,
+          "set_generic(id, value) -> value \n\n"
+          "Request the video device to set a generic property. Useful in cases "
+          "where the explicit control setter method has not been implemented. " },
+  {"get_generic", (PyCFunction)Video_device_get_generic, METH_NOARGS,
+          "get_generic(id) -> value \n\n"
+          "Request the video device to get a generic property. Useful in cases "
+          "where the explicit control getter method has not been implemented. " }},
   {"start", (PyCFunction)Video_device_start, METH_NOARGS,
        "start()\n\n"
        "Start video capture."},
