@@ -613,7 +613,7 @@ static PyObject *Video_device_set_generic_int(Video_device *self, PyObject *args
 {
     struct v4l2_control ctrl;
     CLEAR(ctrl);
-  if(!PyArg_ParseTuple(args, "Ii", &(ctrl.id), &(ctrl.value))
+  if(!PyArg_ParseTuple(args, "Ii", &(ctrl.id), &(ctrl.value)))
     {
       return NULL;
     }
