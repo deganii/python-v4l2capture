@@ -948,7 +948,7 @@ static PyMethodDef Video_device_methods[] = {
   {"get_generic_int", (PyCFunction)Video_device_get_generic_int, METH_NOARGS,
           "get_generic(id) -> value \n\n"
           "Request the video device to get a generic (int) property. Useful in cases "
-          "where the explicit control getter method has not been implemented. " }},
+          "where the explicit control getter method has not been implemented. " },
   {"start", (PyCFunction)Video_device_start, METH_NOARGS,
        "start()\n\n"
        "Start video capture."},
