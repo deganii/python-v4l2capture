@@ -650,8 +650,7 @@ static PyObject *Video_device_get_roi_auto(Video_device *self)
 
 static PyObject *Video_device_set_roi_offset(Video_device *self, PyObject *args)
 {
-#ifdef V4L2_CID_FOCUS_AUTO
-    int x,y
+    int x,y;
   if(!PyArg_ParseTuple(args, "ii", &x,&y))
     {
       return NULL;
@@ -672,14 +671,10 @@ static PyObject *Video_device_set_roi_offset(Video_device *self, PyObject *args)
   	return NULL;
   }
   return Py_BuildValue("ii",ctrl_x.value, ctrl_y.value);
-#else
-    return NULL;
-#endif
 }
 
 static PyObject *Video_device_get_roi_offset(Video_device *self)
 {
-#ifdef V4L2_CID_FOCUS_AUTO
     struct v4l2_control ctrl;
   CLEAR(ctrl);
   ctrl.id    = V4L2_CID_FOCUS_AUTO;
@@ -687,9 +682,6 @@ static PyObject *Video_device_get_roi_offset(Video_device *self)
   	return NULL;
   }
   return Py_BuildValue("i",ctrl.value);
-#else
-    return NULL;
-#endif
 }
 
 
@@ -702,8 +694,6 @@ static PyObject *Video_device_set_generic_int(Video_device *self, PyObject *args
       return NULL;
     }
 
-  //ctrl.id    = g_id;
-  //ctrl.value = g_value;
   if(my_ioctl(self->fd, VIDIOC_S_CTRL, &ctrl)){
   	return NULL;
   }
