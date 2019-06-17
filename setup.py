@@ -13,7 +13,7 @@
 from distutils.core import Extension, setup
 setup(
     name = "v4l2capture",
-    version = "1.6.1",
+    version = "1.6.2",
     author = "Fredrik Portstrom (I.Degani fork)",
     author_email = "fredrik@jemla.se / idegani@mit.edu",
     url = "https://github.com/deganii/python-v4l2capture",

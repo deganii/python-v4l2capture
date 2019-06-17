@@ -46,16 +46,20 @@ Change log
 
 (see git log for latest changes)
 
-1.6 (2019-06-14) - Added support for querying camera formats and getting contrast. Fixed Python 3 Bug
+1.6.2 (2019-06-17) - Added support for obtaining camera ROI offset coordinates
 
-1.4 (2011-03-18) - Added support for YUV420 output.
+1.6.1 (2019-06-16) - Added support for obtaining generic integer properties by id
 
-1.3 (2010-07-21) - Added set of capabilities to the return value of
-                   get_info. Updated list_devices.py.
+1.6   (2019-06-14) - Added support for querying camera formats and getting contrast. Fixed Python 3 Bug
 
-1.2 (2010-04-01) - Forked example script into capture_picture.py and
-    		   capture_picture_delayed.py.
+1.4   (2011-03-18) - Added support for YUV420 output.
 
-1.1 (2009-11-03) - Updated URL and documentation.
+1.3   (2010-07-21) - Added set of capabilities to the return value of
+                     get_info. Updated list_devices.py.
 
-1.0 (2009-02-28) - Initial release.
+1.2   (2010-04-01) - Forked example script into capture_picture.py and
+      		   capture_picture_delayed.py.
+
+1.1   (2009-11-03) - Updated URL and documentation.
+
+1.0   (2009-02-28) - Initial release.

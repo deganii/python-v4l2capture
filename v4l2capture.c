@@ -41,6 +41,15 @@
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 
+
+/* Imaging Source UVC Camera Parameters */
+/* from TIS uvc-exctensions/usb3.xml*/
+#define TIS_V4L2_EXPOSURE_TIME_US   0x0199e201
+#define TIS_V4L2_GAIN_ABS           0x0199e204
+#define TIS_V4L2_ROI_OFFSET_X       0x0199e218
+#define TIS_V4L2_ROI_OFFSET_Y       0x0199e219
+#define TIS_V4L2_ROI_AUTO_CENTER    0x0199e220
+
 struct buffer {
   void *start;
   size_t length;
@@ -575,7 +584,7 @@ static PyObject *Video_device_get_exposure_auto(Video_device *self)
 static PyObject *Video_device_set_focus_auto(Video_device *self, PyObject *args)
 {
 #ifdef V4L2_CID_FOCUS_AUTO
-  int autofocus;
+    int autofocus;
   if(!PyArg_ParseTuple(args, "i", &autofocus))
     {
       return NULL;
@@ -590,14 +599,14 @@ static PyObject *Video_device_set_focus_auto(Video_device *self, PyObject *args)
   }
   return Py_BuildValue("i",ctrl.value);
 #else
-  return NULL;
+    return NULL;
 #endif
 }
 
 static PyObject *Video_device_get_focus_auto(Video_device *self)
 {
 #ifdef V4L2_CID_FOCUS_AUTO
-  struct v4l2_control ctrl;
+    struct v4l2_control ctrl;
   CLEAR(ctrl);
   ctrl.id    = V4L2_CID_FOCUS_AUTO;
   if(my_ioctl(self->fd, VIDIOC_G_CTRL, &ctrl)){
@@ -605,9 +614,84 @@ static PyObject *Video_device_get_focus_auto(Video_device *self)
   }
   return Py_BuildValue("i",ctrl.value);
 #else
-  return NULL;
+    return NULL;
 #endif
 }
+
+static PyObject *Video_device_set_roi_auto(Video_device *self, PyObject *args)
+{
+  int autoroi;
+  if(!PyArg_ParseTuple(args, "i", &autoroi))
+    {
+      return NULL;
+    }
+
+  struct v4l2_control ctrl;
+  CLEAR(ctrl);
+  ctrl.id    = TIS_V4L2_ROI_AUTO_CENTER;
+  ctrl.value = autoroi;
+  if(my_ioctl(self->fd, VIDIOC_S_CTRL, &ctrl)){
+  	return NULL;
+  }
+  return Py_BuildValue("i",ctrl.value);
+}
+
+static PyObject *Video_device_get_roi_auto(Video_device *self)
+{
+  struct v4l2_control ctrl;
+  CLEAR(ctrl);
+  ctrl.id    = TIS_V4L2_ROI_AUTO_CENTER;
+  if(my_ioctl(self->fd, VIDIOC_G_CTRL, &ctrl)){
+  	return NULL;
+  }
+  return Py_BuildValue("i",ctrl.value);
+}
+
+
+static PyObject *Video_device_set_roi_offset(Video_device *self, PyObject *args)
+{
+#ifdef V4L2_CID_FOCUS_AUTO
+    int x,y
+  if(!PyArg_ParseTuple(args, "ii", &x,&y))
+    {
+      return NULL;
+    }
+
+  struct v4l2_control ctrl_x, ctrl_y;
+  CLEAR(ctrl_x);
+  ctrl_x.id    = TIS_V4L2_ROI_OFFSET_X;
+  ctrl_x.value = x;
+  if(my_ioctl(self->fd, VIDIOC_S_CTRL, &ctrl_x)){
+  	return NULL;
+  }
+
+  CLEAR(ctrl_y);
+  ctrl_y.id    = TIS_V4L2_ROI_OFFSET_Y;
+  ctrl_y.value = y;
+  if(my_ioctl(self->fd, VIDIOC_S_CTRL, &ctrl_y)){
+  	return NULL;
+  }
+  return Py_BuildValue("ii",ctrl_x.value, ctrl_y.value);
+#else
+    return NULL;
+#endif
+}
+
+static PyObject *Video_device_get_roi_offset(Video_device *self)
+{
+#ifdef V4L2_CID_FOCUS_AUTO
+    struct v4l2_control ctrl;
+  CLEAR(ctrl);
+  ctrl.id    = V4L2_CID_FOCUS_AUTO;
+  if(my_ioctl(self->fd, VIDIOC_G_CTRL, &ctrl)){
+  	return NULL;
+  }
+  return Py_BuildValue("i",ctrl.value);
+#else
+    return NULL;
+#endif
+}
+
 
 static PyObject *Video_device_set_generic_int(Video_device *self, PyObject *args)
 {
@@ -941,6 +1025,18 @@ static PyMethodDef Video_device_methods[] = {
   {"get_focus_auto", (PyCFunction)Video_device_get_focus_auto, METH_NOARGS,
        "get_focus_auto() -> autofocus \n\n"
        "Request the video device to get auto focus value. " },
+  {"set_roi_auto", (PyCFunction)Video_device_set_roi_auto, METH_VARARGS,
+          "set_roi_auto(roi_auto) -> roi_auto \n\n"
+          "Request the video device to set whether the camera ROI is auto-centered. " },
+  {"get_roi_auto", (PyCFunction)Video_device_get_roi_auto, METH_NOARGS,
+          "get_roi_auto() -> roi_auto \n\n"
+          "Request the video device to get whether the camera ROI is auto-centered. },
+  {"set_roi_offset", (PyCFunction)Video_device_set_roi_offset, METH_VARARGS,
+          "set_roi_offset(x,y) -> (x,y) \n\n"
+          "Request the video device to set get camera ROI offset coordinates. " },
+  {"get_roi_offset", (PyCFunction)Video_device_get_roi_offset, METH_NOARGS,
+          "get_roi_offset() -> (x,y) \n\n"
+          "Request the video device to get camera ROI offset coordinates. " },
   {"set_generic_int", (PyCFunction)Video_device_set_generic_int, METH_VARARGS,
           "set_generic(id, value) -> value \n\n"
           "Request the video device to set a generic (int) property. Useful in cases "
