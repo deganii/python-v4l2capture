@@ -1020,7 +1020,7 @@ static PyMethodDef Video_device_methods[] = {
           "Request the video device to set whether the camera ROI is auto-centered. " },
   {"get_roi_auto", (PyCFunction)Video_device_get_roi_auto, METH_NOARGS,
           "get_roi_auto() -> roi_auto \n\n"
-          "Request the video device to get whether the camera ROI is auto-centered. },
+          "Request the video device to get whether the camera ROI is auto-centered."},
   {"set_roi_offset", (PyCFunction)Video_device_set_roi_offset, METH_VARARGS,
           "set_roi_offset(x,y) -> (x,y) \n\n"
           "Request the video device to set get camera ROI offset coordinates. " },
