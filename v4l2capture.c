@@ -675,13 +675,18 @@ static PyObject *Video_device_set_roi_offset(Video_device *self, PyObject *args)
 
 static PyObject *Video_device_get_roi_offset(Video_device *self)
 {
-    struct v4l2_control ctrl;
-  CLEAR(ctrl);
-  ctrl.id    = V4L2_CID_FOCUS_AUTO;
-  if(my_ioctl(self->fd, VIDIOC_G_CTRL, &ctrl)){
+    struct v4l2_control ctrl_x,ctrl_y;
+  CLEAR(ctrl_x);
+    ctrl_x.id    = TIS_V4L2_ROI_OFFSET_X;
+  if(my_ioctl(self->fd, VIDIOC_G_CTRL, &ctrl_x)){
   	return NULL;
   }
-  return Py_BuildValue("i",ctrl.value);
+    CLEAR(ctrl_y);
+    ctrl_y.id    = TIS_V4L2_ROI_OFFSET_Y;
+    if(my_ioctl(self->fd, VIDIOC_G_CTRL, &ctrl_y)){
+        return NULL;
+    }
+  return Py_BuildValue("ii",ctrl_x.value,ctrl_y.value);
 }
 
 
