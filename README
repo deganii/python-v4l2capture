@@ -36,6 +36,15 @@ python-v4l2capture uses distutils.
 To build: ./setup.py build
 To build and install: ./setup.py install
 
+Directly From GitHub:
+pip3 install git+git://github.com/deganii/python-v4l2capture.git
+
+Notes
+=======
+Make sure you have lib4l-dev installed, i.e. on ubuntu:
+
+sudo apt-get install libv4l-dev
+
 Example
 =======
 
